@@ -14,6 +14,19 @@ enum GameMessages
 	ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM + 1
 };
 
+void SendMessageToServer(RakNet::RakPeerInterface *peer, RakNet::Packet *packet)
+{
+	while (1)
+	{
+		char str[512];
+		std::cin.getline(str, 512);
+		RakNet::BitStream bsOut;
+		bsOut.Write((RakNet::MessageID)ID_GAME_MESSAGE_1);
+		bsOut.Write(str);
+		peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+	}
+}
+
 int main(void)
 {
 	char str[512];
@@ -79,6 +92,8 @@ int main(void)
 				bsOut.Write((RakNet::MessageID)ID_GAME_MESSAGE_1);
 				bsOut.Write("Hello world");
 				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+
+				SendMessageToServer(peer, packet);
 			}
 				break;
 			case ID_NEW_INCOMING_CONNECTION:
@@ -117,6 +132,7 @@ int main(void)
 				break;
 			}
 		}
+
 	}
 
 	RakNet::RakPeerInterface::DestroyInstance(peer);
