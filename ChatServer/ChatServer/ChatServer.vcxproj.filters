@@ -19,6 +19,24 @@
     <Filter Include="Header Files\RakNet">
       <UniqueIdentifier>{8ba5b4df-d8fb-4163-83f7-5dc8980bcb70}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\UserTemplate">
+      <UniqueIdentifier>{0f85b7f6-c78d-40bd-828d-b7bba571c6a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UserTemplate">
+      <UniqueIdentifier>{36559c41-dea4-4ba0-8495-a8552dddbb40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\UserTemplate\Server">
+      <UniqueIdentifier>{c1793371-0388-4afb-9f5d-daabca2dbc19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UserTemplate\Server">
+      <UniqueIdentifier>{867ddd07-8ff1-4705-81e6-0be7cb37c1f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\UserTemplate\Client">
+      <UniqueIdentifier>{4965babe-9f47-4252-ae33-37e7bb566681}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UserTemplate\Client">
+      <UniqueIdentifier>{dde66e48-eb05-4aa4-bede-f8eab82b7af8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -353,6 +371,24 @@
     </ClCompile>
     <ClCompile Include="..\RakNet\Source\PacketOutputWindowLogger.cpp">
       <Filter>Source Files\RakNet</Filter>
+    </ClCompile>
+    <ClCompile Include="User.cpp">
+      <Filter>Source Files\UserTemplate</Filter>
+    </ClCompile>
+    <ClCompile Include="Client.cpp">
+      <Filter>Source Files\UserTemplate\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="Server.cpp">
+      <Filter>Source Files\UserTemplate\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerNetwork.cpp">
+      <Filter>Source Files\UserTemplate\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientNetwork.cpp">
+      <Filter>Source Files\UserTemplate\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientInput.cpp">
+      <Filter>Source Files\UserTemplate\Client</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -817,6 +853,24 @@
     </ClInclude>
     <ClInclude Include="..\RakNet\Source\VitaIncludes.h">
       <Filter>Header Files\RakNet</Filter>
+    </ClInclude>
+    <ClInclude Include="User.h">
+      <Filter>Header Files\UserTemplate</Filter>
+    </ClInclude>
+    <ClInclude Include="Client.h">
+      <Filter>Header Files\UserTemplate\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="Server.h">
+      <Filter>Header Files\UserTemplate\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerNetwork.h">
+      <Filter>Header Files\UserTemplate\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientNetwork.h">
+      <Filter>Header Files\UserTemplate\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientInput.h">
+      <Filter>Header Files\UserTemplate\Client</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -7,13 +7,16 @@
 #include "RakNetTypes.h"  // MessageID
 #include <thread>
 
+#include "Client.h"
+#include "Server.h"
+
 #define MAX_CLIENTS 10
 #define SERVER_PORT 60000
 
-enum GameMessages
+/*enum GameMessages
 {
 	ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM + 1
-};
+};*/
 
 void SendMessageToServer(RakNet::RakPeerInterface *peer, RakNet::SystemAddress* serverGUID)
 {
@@ -33,26 +36,31 @@ int main(void)
 	char str[512];
 
 	RakNet::RakPeerInterface *peer = RakNet::RakPeerInterface::GetInstance();
-	bool isServer;
-	RakNet::Packet *packet;
+	//bool isServer;
+	//RakNet::Packet *packet;
 	RakNet::SystemAddress serverGUID;
 
 	printf("(C) or (S)erver?\n");
 	std::cin.getline(str, 512);
 	if ((str[0] == 'c') || (str[0] == 'C'))
 	{
-		RakNet::SocketDescriptor sd;
-		peer->Startup(1, &sd, 1);
-		isServer = false;
+		UserTemplate::Client* c = new UserTemplate::Client();
+		delete c;
+		//RakNet::SocketDescriptor sd;
+		//peer->Startup(1, &sd, 1);
+		//isServer = false;
 	}
-	else {
-		RakNet::SocketDescriptor sd(SERVER_PORT, 0);
-		peer->Startup(MAX_CLIENTS, &sd, 1);
-		isServer = true;
+	else 
+	{
+		UserTemplate::Server* s = new UserTemplate::Server();
+		delete s;
+		//RakNet::SocketDescriptor sd(SERVER_PORT, 0);
+		//peer->Startup(MAX_CLIENTS, &sd, 1);
+		//isServer = true;
 	}
 
 
-	if (isServer)
+	/*if (isServer)
 	{
 		printf("Starting the server.\n");
 		// We need to let the server accept incoming connections from the clients
@@ -152,6 +160,9 @@ int main(void)
 
 					RakNet::RakString rs;
 					RakNet::BitStream bsIn(packet->data, packet->length, false);
+					bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
+					bsIn.Read(rs);
+					printf("%s\n", rs.C_String());
 					peer->Send(&bsIn, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true);
 				}
 				else
@@ -168,7 +179,7 @@ int main(void)
 
 	}
 
-	RakNet::RakPeerInterface::DestroyInstance(peer);
+	RakNet::RakPeerInterface::DestroyInstance(peer);*/
 
 	return 0;
 }

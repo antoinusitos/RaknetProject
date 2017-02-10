@@ -427,6 +427,11 @@ enum DefaultMessageIDTypes
 	ID_RESERVED_9,
 
 	// For the user to use.  Start your first enumeration at this value.
+
+	ID_DESTINATION_SERVER,
+	ID_DESTINATION_MULTICAST,
+	ID_DESTINATION_CLIENT,
+
 	ID_USER_PACKET_ENUM
 	//-------------------------------------------------------------------------------------------------------------
  
