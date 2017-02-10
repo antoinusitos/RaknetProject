@@ -5,6 +5,7 @@
 #include "MessageIdentifiers.h"
 #include "BitStream.h"
 #include "RakNetTypes.h"  // MessageID
+#include <thread>
 
 #define MAX_CLIENTS 10
 #define SERVER_PORT 60000
@@ -14,16 +15,16 @@ enum GameMessages
 	ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM + 1
 };
 
-void SendMessageToServer(RakNet::RakPeerInterface *peer, RakNet::Packet *packet)
+void SendMessageToServer(RakNet::RakPeerInterface *peer, RakNet::SystemAddress* serverGUID)
 {
 	while (1)
 	{
 		char str[512];
 		std::cin.getline(str, 512);
 		RakNet::BitStream bsOut;
-		bsOut.Write((RakNet::MessageID)ID_GAME_MESSAGE_1);
+		bsOut.Write((RakNet::MessageID)9999);
 		bsOut.Write(str);
-		peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
+		peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, *serverGUID, false);
 	}
 }
 
@@ -34,6 +35,7 @@ int main(void)
 	RakNet::RakPeerInterface *peer = RakNet::RakPeerInterface::GetInstance();
 	bool isServer;
 	RakNet::Packet *packet;
+	RakNet::SystemAddress serverGUID;
 
 	printf("(C) or (S)erver?\n");
 	std::cin.getline(str, 512);
@@ -67,6 +69,11 @@ int main(void)
 
 	}
 
+	std::thread threadInput(SendMessageToServer, peer, &serverGUID);
+
+	RakNet::RakNetGUID allGUID[2];
+	int nbClient = 0;
+
 	while (1)
 	{
 		for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive())
@@ -85,7 +92,7 @@ int main(void)
 			case ID_CONNECTION_REQUEST_ACCEPTED:
 			{
 				printf("Our connection request has been accepted.\n");
-
+				printf("Our GUID : %s \n", peer->GetMyGUID().ToString());
 				// Use a BitStream to write a custom user message
 				// Bitstreams are easier to use than sending casted structures, and handle endian swapping automatically
 				RakNet::BitStream bsOut;
@@ -93,11 +100,22 @@ int main(void)
 				bsOut.Write("Hello world");
 				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, false);
 
-				SendMessageToServer(peer, packet);
+				serverGUID = packet->systemAddress;
 			}
 				break;
 			case ID_NEW_INCOMING_CONNECTION:
-				printf("A connection is incoming.\n");
+			{
+				printf("A connection is incoming. \n");
+				allGUID[nbClient] = packet->guid;
+				printf("connection : %s \n", allGUID[nbClient].ToString());
+
+				nbClient++;
+
+				RakNet::BitStream bsOut;
+				bsOut.Write((RakNet::MessageID)ID_GAME_MESSAGE_1);
+				bsOut.Write("Welcome!");
+				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetMyGUID(), true);
+			}
 				break;
 			case ID_NO_FREE_INCOMING_CONNECTIONS:
 				printf("The server is full.\n");
@@ -128,7 +146,22 @@ int main(void)
 			}
 			break;
 			default:
-				printf("Message with identifier %i has arrived.\n", packet->data[0]);
+				if (isServer)
+				{
+					printf("Message with identifier %i has arrived.\n", packet->data[0]);
+
+					RakNet::RakString rs;
+					RakNet::BitStream bsIn(packet->data, packet->length, false);
+					peer->Send(&bsIn, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true);
+				}
+				else
+				{
+					RakNet::RakString rs;
+					RakNet::BitStream bsIn(packet->data, packet->length, false);
+					bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
+					bsIn.Read(rs);
+					printf("%s\n", rs.C_String());
+				}
 				break;
 			}
 		}
