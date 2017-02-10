@@ -49,9 +49,12 @@ namespace UserTemplate
 	{
 		while (_isRunning)
 		{
-			_textToSend = new char[512];
-			std::cin.getline(_textToSend, 512);
-			_readyToSend = true;
+			if (!_readyToSend)
+			{
+				_textToSend = new char[512];
+				std::cin.getline(_textToSend, 512);
+				_readyToSend = true;
+			}
 		}
 	}
 }

@@ -24,18 +24,22 @@ namespace UserTemplate
 		{
 			if (_input->GetReadyToSend())
 			{
+
 				char* text = _input->GetTextToSend();
 
 				if (text[0] == 'm')
 				{
 					text[0] = ' ';
-					std::cout << "debug :" << text << std::endl;
 					_network->ClientSendMessage(text, UserTemplate::ClientNetwork::MessageDestination::Destination_Multicast);
 				}
 				else if (text[0] == 's')
 				{
 					text[0] = ' ';
 					_network->ClientSendMessage(text, UserTemplate::ClientNetwork::MessageDestination::Destination_Server);
+				}
+				else
+				{
+					printf("can't parse the text in the client !\n");
 				}
 
 				_input->HasSend();

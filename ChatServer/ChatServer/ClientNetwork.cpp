@@ -39,7 +39,8 @@ namespace UserTemplate
 	{
 		RakNet::BitStream bsOut;
 		
-		char* toSend = _name;
+		char toSend[500];
+		strcpy(toSend, _name);
 		strcat(toSend, " :");
 		strcat(toSend, text);
 

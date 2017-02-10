@@ -76,15 +76,6 @@ namespace UserTemplate
 				case ID_CONNECTION_LOST:
 					printf("A client lost the connection.\n");
 					break;
-				/*case ID_GAME_MESSAGE_1:
-				{
-					RakNet::RakString rs;
-					RakNet::BitStream bsIn(packet->data, packet->length, false);
-					bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
-					bsIn.Read(rs);
-					printf("%s\n", rs.C_String());
-				}
-				break;*/
 				case ID_DESTINATION_MULTICAST:
 				{
 					RakNet::RakString rs;
