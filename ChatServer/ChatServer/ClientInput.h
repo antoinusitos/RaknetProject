@@ -3,7 +3,7 @@
 #include <thread>
 #include <memory>
 #include <stdio.h>
-#include <string.h>
+#include <string>
 #include <iostream>
 
 namespace UserTemplate
@@ -17,7 +17,7 @@ namespace UserTemplate
 		void Stop();
 
 		bool GetReadyToSend();
-		char* GetTextToSend();
+		const char* GetTextToSend() const;
 
 		void HasSend();
 
@@ -33,6 +33,6 @@ namespace UserTemplate
 		bool _isRunning;
 		bool _readyToSend;
 
-		char* _textToSend;
+		std::string _textToSend;
 	};
 }

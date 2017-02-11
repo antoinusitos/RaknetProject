@@ -431,6 +431,7 @@ enum DefaultMessageIDTypes
 	ID_DESTINATION_SERVER,
 	ID_DESTINATION_MULTICAST,
 	ID_DESTINATION_CLIENT,
+	ID_DESTINATION_SERVER_INIT,
 
 	ID_USER_PACKET_ENUM
 	//-------------------------------------------------------------------------------------------------------------

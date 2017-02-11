@@ -24,9 +24,9 @@ namespace UserTemplate
 		return _readyToSend;
 	}
 
-	char * ClientInput::GetTextToSend()
+	const char* ClientInput::GetTextToSend() const
 	{
-		return _textToSend;
+		return _textToSend.c_str();
 	}
 
 	void ClientInput::HasSend()
@@ -51,8 +51,7 @@ namespace UserTemplate
 		{
 			if (!_readyToSend)
 			{
-				_textToSend = new char[512];
-				std::cin.getline(_textToSend, 512);
+				std::getline(std::cin, _textToSend);
 				_readyToSend = true;
 			}
 		}

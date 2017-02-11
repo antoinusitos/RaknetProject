@@ -23,6 +23,12 @@ namespace UserTemplate
 		ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM + 1
 	};
 
+	struct ClientAddress
+	{
+		RakNet::RakNetGUID _address;
+		const char* _name;
+	};
+
 	public:
 		ServerNetwork();
 		~ServerNetwork();
@@ -47,6 +53,6 @@ namespace UserTemplate
 
 		int _nbClient;
 
-		RakNet::RakNetGUID _allGUID[2];
+		ClientAddress _allGUID[2];
 	};
 }

@@ -71,6 +71,7 @@ namespace UserTemplate
 	void ClientNetwork::Init()
 	{
 		_isRunning = true;
+
 		_networkThread = std::make_unique<std::thread>(&ClientNetwork::HandleMessages, this);
 	}
 
@@ -95,12 +96,8 @@ namespace UserTemplate
 					// Use a BitStream to write a custom user message
 					// Bitstreams are easier to use than sending casted structures, and handle endian swapping automatically
 					RakNet::BitStream bsOut;
-					bsOut.Write((RakNet::MessageID)ID_GAME_MESSAGE_1);
-					char* toPrint = " has joined !";
-					char finalText[512];
-					strcpy(finalText,_name);
-					strcat(finalText, toPrint);
-					bsOut.Write(finalText);
+					bsOut.Write((RakNet::MessageID)ID_DESTINATION_SERVER_INIT);
+					bsOut.Write(_name);
 					_peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, _packet->systemAddress, false);
 
 					_serverGUID = _packet->systemAddress;

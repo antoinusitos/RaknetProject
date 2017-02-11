@@ -25,17 +25,17 @@ namespace UserTemplate
 			if (_input->GetReadyToSend())
 			{
 
-				char* text = _input->GetTextToSend();
+				std::string text = _input->GetTextToSend();
 
 				if (text[0] == 'm')
 				{
 					text[0] = ' ';
-					_network->ClientSendMessage(text, UserTemplate::ClientNetwork::MessageDestination::Destination_Multicast);
+					_network->ClientSendMessage(text.c_str(), UserTemplate::ClientNetwork::MessageDestination::Destination_Multicast);
 				}
 				else if (text[0] == 's')
 				{
 					text[0] = ' ';
-					_network->ClientSendMessage(text, UserTemplate::ClientNetwork::MessageDestination::Destination_Server);
+					_network->ClientSendMessage(text.c_str(), UserTemplate::ClientNetwork::MessageDestination::Destination_Server);
 				}
 				else
 				{
