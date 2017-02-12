@@ -39,29 +39,35 @@ namespace UserTemplate
 	{
 		RakNet::BitStream bsOut;
 		
-		char toSend[500];
-		strcpy(toSend, _name);
-		strcat(toSend, " :");
-		strcat(toSend, text);
+		std::string toSend = "";
+		toSend += text;
+
+		MessageData message = MessageData();
+		message._destination = destination;
+		strcpy(message._toSend, toSend.c_str());
+		message._senderAddress = _peer->GetMyGUID();
+		strcpy(message._senderName, _name);
 
 		switch (destination)
 		{
 			case MessageDestination::Destination_Client:
 			{
-
+				bsOut.Write((RakNet::MessageID)ID_DESTINATION_SERVER);
+				bsOut.Write(message);
+				_peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, _serverGUID, false);
 				break;
 			}
 			case MessageDestination::Destination_Multicast:
 			{
-				bsOut.Write((RakNet::MessageID)ID_DESTINATION_MULTICAST);
-				bsOut.Write(toSend);
-				_peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, _peer->GetMyGUID(), true);
+				bsOut.Write((RakNet::MessageID)ID_DESTINATION_SERVER);
+				bsOut.Write(message);
+				_peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, _serverGUID, false);
 				break;
 			}
 			case MessageDestination::Destination_Server:
 			{
 				bsOut.Write((RakNet::MessageID)ID_DESTINATION_SERVER);
-				bsOut.Write(toSend);
+				bsOut.Write(message);
 				_peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, _serverGUID, false);
 				break;
 			}

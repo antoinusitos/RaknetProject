@@ -430,6 +430,7 @@
     <ClInclude Include="Client.h" />
     <ClInclude Include="ClientInput.h" />
     <ClInclude Include="ClientNetwork.h" />
+    <ClInclude Include="Data.h" />
     <ClInclude Include="Server.h" />
     <ClInclude Include="ServerNetwork.h" />
     <ClInclude Include="User.h" />

@@ -1,5 +1,7 @@
 #include "Client.h"
 
+#include "Data.h"
+
 namespace UserTemplate
 {
 	Client::Client()
@@ -29,13 +31,18 @@ namespace UserTemplate
 
 				if (text[0] == 'm')
 				{
-					text[0] = ' ';
-					_network->ClientSendMessage(text.c_str(), UserTemplate::ClientNetwork::MessageDestination::Destination_Multicast);
+					text.erase(0, 1);
+					_network->ClientSendMessage(text.c_str(), MessageDestination::Destination_Multicast);
 				}
 				else if (text[0] == 's')
 				{
-					text[0] = ' ';
-					_network->ClientSendMessage(text.c_str(), UserTemplate::ClientNetwork::MessageDestination::Destination_Server);
+					text.erase(0, 1);
+					_network->ClientSendMessage(text.c_str(), MessageDestination::Destination_Server);
+				}
+				else if (text[0] == '@')
+				{
+					text.erase(0, 1);
+					_network->ClientSendMessage(text.c_str(), MessageDestination::Destination_Client);
 				}
 				else
 				{

@@ -9,6 +9,7 @@
 #include "RakNetTypes.h"  // MessageID
 #include <thread>
 #include <memory>
+#include "Data.h"
 
 #define MAX_CLIENTS 10
 #define SERVER_PORT 60000
@@ -26,7 +27,7 @@ namespace UserTemplate
 	struct ClientAddress
 	{
 		RakNet::RakNetGUID _address;
-		const char* _name;
+		char _name[500];
 	};
 
 	public:
@@ -41,6 +42,8 @@ namespace UserTemplate
 		void Exit();
 
 		void HandleMessages();
+
+		void ThreatMessage(const MessageData theMessage, const RakNet::SystemAddress senderAddress) const;
 
 	private:
 		std::unique_ptr<std::thread> _networkThread;

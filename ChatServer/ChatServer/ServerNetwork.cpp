@@ -4,6 +4,7 @@
 
 namespace UserTemplate
 {
+
 	ServerNetwork::ServerNetwork()
 	{
 		_nbClient = 0;
@@ -40,6 +41,55 @@ namespace UserTemplate
 		RakNet::RakPeerInterface::DestroyInstance(peer);
 	}
 
+	void ServerNetwork::ThreatMessage(const MessageData theMessage, const RakNet::SystemAddress senderAddress) const
+	{
+		switch (theMessage._destination)
+		{
+			case MessageDestination::Destination_Multicast :
+			{
+				printf("message to send to all client %s \n", theMessage._toSend);
+				RakNet::BitStream bsOut;
+				bsOut.Write((RakNet::MessageID)ID_GAME_MESSAGE_1);
+				bsOut.Write(theMessage._toSend);
+				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetMyGUID(), true);
+			}
+			break;
+			case MessageDestination::Destination_Client:
+			{
+				printf("message to send to a client %s \n", theMessage._toSend);
+
+				std::string s = theMessage._toSend;
+
+				std::size_t found = s.find(' ');
+				if (found != std::string::npos)
+				{
+					std::string name = s.substr(0, found);
+					for (auto i = 0; i < _nbClient; i++)
+					{
+						if (strcmp(_allGUID[i]._name, name.c_str()) == 0)
+						{
+							s = s.erase(0, found);
+							std::string toSend = theMessage._senderName;
+							toSend += " : " + s;
+							RakNet::BitStream bsOut;
+							bsOut.Write((RakNet::MessageID)ID_GAME_MESSAGE_1);
+							bsOut.Write(toSend.c_str());
+							peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, _allGUID[i]._address, false);
+							break;
+						}
+					}
+				}
+			}
+			break;
+			case MessageDestination::Destination_Server:
+			{
+				// TODO : analyse the message
+				printf("message to analyse %s \n", theMessage._toSend);
+			}
+			break;
+		}
+	}
+
 	void ServerNetwork::HandleMessages()
 	{
 		while (_isRunning)
@@ -73,7 +123,7 @@ namespace UserTemplate
 				case ID_CONNECTION_LOST:
 					printf("A client lost the connection.\n");
 					break;
-				case ID_DESTINATION_MULTICAST:
+				/*case ID_DESTINATION_MULTICAST:
 				{
 					printf("multicast message.\n");
 					RakNet::RakString rs;
@@ -83,15 +133,17 @@ namespace UserTemplate
 					printf("%s\n", rs.C_String());
 					peer->Send(&bsIn, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true);
 				}
-				break;
+				break;*/
 				case ID_DESTINATION_SERVER:
 				{
 					printf("server message.\n");
-					RakNet::RakString rs;
+
+					MessageData md;
 					RakNet::BitStream bsIn(packet->data, packet->length, false);
 					bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
-					bsIn.Read(rs);
-					printf("%s\n", rs.C_String());
+					bsIn.Read(md);
+					printf("%s\n", md._toSend);
+					ThreatMessage(md, packet->systemAddress);
 				}
 				break;
 				case ID_DESTINATION_SERVER_INIT:
@@ -106,9 +158,9 @@ namespace UserTemplate
 
 					for (auto i = 0; i < _nbClient; i++)
 					{
-						if (_allGUID[i]._address == packet->guid)
+						if (strcmp(_allGUID[i]._address.ToString(), packet->guid.ToString()) == 0)
 						{
-							_allGUID[i]._name = name.c_str();
+							strcpy(_allGUID[i]._name, name.c_str());
 						}
 					}
 

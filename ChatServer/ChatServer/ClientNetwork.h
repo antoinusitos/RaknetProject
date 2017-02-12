@@ -10,6 +10,8 @@
 #include <thread>
 #include <memory>
 
+#include "Data.h"
+
 #define SERVER_PORT 60000
 
 namespace UserTemplate
@@ -24,13 +26,6 @@ namespace UserTemplate
 	};
 
 	public:
-
-		enum MessageDestination
-		{
-			Destination_Client,
-			Destination_Server,
-			Destination_Multicast,
-		};
 
 		ClientNetwork();
 		~ClientNetwork();

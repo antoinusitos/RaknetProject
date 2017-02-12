@@ -872,6 +872,9 @@
     <ClInclude Include="ClientInput.h">
       <Filter>Header Files\UserTemplate\Client</Filter>
     </ClInclude>
+    <ClInclude Include="Data.h">
+      <Filter>Header Files\UserTemplate</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\RakNet\Source\CMakeLists.txt">
