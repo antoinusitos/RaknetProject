@@ -2,7 +2,8 @@
 
 namespace UserTemplate
 {
-	ClientInput::ClientInput(const sf::RenderWindow& window)
+
+	ClientInput::ClientInput(sf::RenderWindow& window)
 	{
 		_readyToSend = false;
 		_isRunning = false;
@@ -35,10 +36,51 @@ namespace UserTemplate
 		_textToSend = "";
 	}
 
-	void ClientInput::Init(const sf::RenderWindow& window)
+	void ClientInput::Init(sf::RenderWindow& window)
 	{
 		_isRunning = true;
-		_inputThread = std::make_unique<std::thread>(&ClientInput::HandleInputs, window, this);
+		_inputThread = std::make_unique<std::thread>(&ClientInput::HandleInputs, this);
+
+		/*std::thread t([this, &window]()
+		{
+			while (this->_isRunning)
+			{
+				sf::Event theEvent;
+				//while (window.pollEvent(theEvent))
+				while (window.pollEvent(theEvent))
+				{
+					// if we press a key on the keyboard
+					if (!_readyToSend && theEvent.type == sf::Event::TextEntered)
+					{
+						if (theEvent.text.unicode < 128)
+						{
+							// escape key
+							if (theEvent.key.code == ESCAPE_KEY)
+							{
+								fprintf(stderr, "Stopping application... \n");
+							}
+							// backscape key
+							else if (theEvent.key.code == BACKSPACE_KEY)
+							{
+								if (_textToSend.size() > 0)
+									_textToSend = _textToSend.substr(0, _textToSend.size() - 1);
+							}
+							// enter key
+							else if (theEvent.key.code == ENTER_KEY)
+							{
+								_readyToSend = true;
+							}
+							else
+							{
+								_textToSend += static_cast<char>(theEvent.text.unicode);
+								//_text += static_cast<char>(event.text.unicode);
+							}
+						}
+					}
+				}
+			}
+		});
+		t.join();*/
 	}
 
 	void ClientInput::Exit()
@@ -46,20 +88,21 @@ namespace UserTemplate
 		_inputThread.get()->join();
 	}
 
-	void ClientInput::HandleInputs(const sf::RenderWindow& window)
+	void ClientInput::HandleInputs(/*sf::RenderWindow& window*/)
 	{
 		while (_isRunning)
 		{
-			/*if (!_readyToSend)
+			if (!_readyToSend)
 			{
 				std::getline(std::cin, _textToSend);
 				_readyToSend = true;
-			}*/
+			}
 			// do until there is no more event to execute
+			/*sf::Event event;
 			while (window.pollEvent(event))
 			{
 				// if we press a key on the keyboard
-				if (event.type == sf::Event::TextEntered)
+				if (!_readyToSend && event.type == sf::Event::TextEntered)
 				{
 					if (event.text.unicode < 128)
 					{
@@ -67,19 +110,17 @@ namespace UserTemplate
 						if (event.key.code == ESCAPE_KEY)
 						{
 							fprintf(stderr, "Stopping application... \n");
-							_owner->Stop();
 						}
 						// backscape key
 						else if (event.key.code == BACKSPACE_KEY)
 						{
-							if (_text.size() > 0)
-								_text = _text.substr(0, _text.size() - 1);
+							if (_textToSend.size() > 0)
+								_textToSend = _textToSend.substr(0, _textToSend.size() - 1);
 						}
 						// enter key
 						else if (event.key.code == ENTER_KEY)
 						{
-							_owner->Send(_text);
-							_text = "";
+							_readyToSend = true;
 						}
 						else
 						{
@@ -88,7 +129,7 @@ namespace UserTemplate
 						}
 					}
 				}
-			}
+			}*/
 		}
 	}
 }

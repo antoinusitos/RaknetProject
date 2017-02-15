@@ -6,6 +6,7 @@
 #include <string>
 #include <iostream>
 #include <SFML/Graphics.hpp>
+#include <SFML/Window.hpp>
 
 #define ESCAPE_KEY 27
 #define ENTER_KEY 13
@@ -16,7 +17,7 @@ namespace UserTemplate
 	class ClientInput
 	{
 	public:
-		ClientInput(const sf::RenderWindow& window);
+		ClientInput(sf::RenderWindow& window);
 		~ClientInput();
 
 		void Stop();
@@ -27,11 +28,11 @@ namespace UserTemplate
 		void HasSend();
 
 	private:
-		void Init(const sf::RenderWindow& window);
+		void Init(sf::RenderWindow& window);
 
 		void Exit();
 
-		void HandleInputs(const sf::RenderWindow& window);
+		void HandleInputs(/*const sf::RenderWindow& window*/);
 	private:
 		std::unique_ptr<std::thread> _inputThread;
 

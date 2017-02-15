@@ -19,11 +19,11 @@ namespace UserTemplate
 	{
 		m.lock();
 		_network = std::make_unique<ClientNetwork>();
-
 		m.unlock();
-		_input = std::make_unique<ClientInput>();
 
-		sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
+		sf::RenderWindow window(sf::VideoMode(200, 200), "custom Chat");
+
+		_input = std::make_unique<ClientInput>(window);
 
 		while (_isRunning)
 		{
