@@ -1,6 +1,7 @@
 #include "Client.h"
 
 #include "Data.h"
+#include <SFML/Graphics.hpp>
 
 namespace UserTemplate
 {
@@ -22,8 +23,22 @@ namespace UserTemplate
 		m.unlock();
 		_input = std::make_unique<ClientInput>();
 
+		sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
+
 		while (_isRunning)
 		{
+
+			sf::Event event;
+			while (window.pollEvent(event))
+			{
+				if (event.type == sf::Event::Closed)
+					_isRunning = false;
+					
+			}
+
+			window.clear(sf::Color::Blue);
+			window.display();
+
 			if (_input->GetReadyToSend())
 			{
 
@@ -52,8 +67,12 @@ namespace UserTemplate
 				_input->HasSend();
 			}
 		}
+		
+		_network.get()->Stop();
+		_input.get()->Stop();
 
-		Exit();
+		window.close();
+		//Exit();
 	}
 
 	void Client::Exit()

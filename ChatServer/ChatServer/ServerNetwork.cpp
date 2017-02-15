@@ -108,7 +108,7 @@ namespace UserTemplate
 					printf("Another client has connected.\n");
 					break;
 				break;
-				case ID_NEW_INCOMING_CONNECTION:
+				case ID_NEW_INCOMING_CONNECTION: 
 				{
 					printf("A connection is incoming. \n");
 					_allGUID[_nbClient]._address = packet->guid;

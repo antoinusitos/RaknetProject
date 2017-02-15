@@ -26,7 +26,7 @@ namespace UserTemplate
 
 	ClientNetwork::~ClientNetwork()
 	{
-		Stop();
+		//Stop();
 	}
 
 	void ClientNetwork::Stop()
@@ -83,8 +83,10 @@ namespace UserTemplate
 
 	void ClientNetwork::Exit()
 	{
-		_networkThread.get()->join();
-		RakNet::RakPeerInterface::DestroyInstance(_peer);
+		if(_networkThread.get() != nullptr && _networkThread.get()->native_handle() != nullptr)
+			_networkThread.get()->join();
+		if(_peer != nullptr && _peer->IsActive())
+			RakNet::RakPeerInterface::DestroyInstance(_peer);
 	}
 
 	void ClientNetwork::HandleMessages()

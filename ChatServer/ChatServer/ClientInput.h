@@ -5,13 +5,18 @@
 #include <stdio.h>
 #include <string>
 #include <iostream>
+#include <SFML/Graphics.hpp>
+
+#define ESCAPE_KEY 27
+#define ENTER_KEY 13
+#define BACKSPACE_KEY 8
 
 namespace UserTemplate
 {
 	class ClientInput
 	{
 	public:
-		ClientInput();
+		ClientInput(const sf::RenderWindow& window);
 		~ClientInput();
 
 		void Stop();
@@ -22,11 +27,11 @@ namespace UserTemplate
 		void HasSend();
 
 	private:
-		void Init();
+		void Init(const sf::RenderWindow& window);
 
 		void Exit();
 
-		void HandleInputs();
+		void HandleInputs(const sf::RenderWindow& window);
 	private:
 		std::unique_ptr<std::thread> _inputThread;
 
