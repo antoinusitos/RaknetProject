@@ -39,56 +39,18 @@ namespace UserTemplate
 	void ClientInput::Init(sf::RenderWindow& window)
 	{
 		_isRunning = true;
-		_inputThread = std::make_unique<std::thread>(&ClientInput::HandleInputs, this);
+		//_inputThread = std::make_unique<std::thread>(&ClientInput::HandleInputs, this);
 
-		/*std::thread t([this, &window]()
-		{
-			while (this->_isRunning)
-			{
-				sf::Event theEvent;
-				//while (window.pollEvent(theEvent))
-				while (window.pollEvent(theEvent))
-				{
-					// if we press a key on the keyboard
-					if (!_readyToSend && theEvent.type == sf::Event::TextEntered)
-					{
-						if (theEvent.text.unicode < 128)
-						{
-							// escape key
-							if (theEvent.key.code == ESCAPE_KEY)
-							{
-								fprintf(stderr, "Stopping application... \n");
-							}
-							// backscape key
-							else if (theEvent.key.code == BACKSPACE_KEY)
-							{
-								if (_textToSend.size() > 0)
-									_textToSend = _textToSend.substr(0, _textToSend.size() - 1);
-							}
-							// enter key
-							else if (theEvent.key.code == ENTER_KEY)
-							{
-								_readyToSend = true;
-							}
-							else
-							{
-								_textToSend += static_cast<char>(theEvent.text.unicode);
-								//_text += static_cast<char>(event.text.unicode);
-							}
-						}
-					}
-				}
-			}
-		});
-		t.join();*/
+		std::thread maintThread(&ClientInput::HandleInputs(window), this);
+		maintThread.join();
 	}
 
 	void ClientInput::Exit()
 	{
-		_inputThread.get()->join();
+		//_inputThread.get()->join();
 	}
 
-	void ClientInput::HandleInputs(/*sf::RenderWindow& window*/)
+	void ClientInput::HandleInputs(sf::RenderWindow& window)
 	{
 		while (_isRunning)
 		{

@@ -32,7 +32,7 @@ namespace UserTemplate
 
 		void Exit();
 
-		void HandleInputs(/*const sf::RenderWindow& window*/);
+		void HandleInputs(sf::RenderWindow& window);
 	private:
 		std::unique_ptr<std::thread> _inputThread;
 
