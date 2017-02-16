@@ -27,14 +27,14 @@ namespace UserTemplate
 
 		void HasSend();
 
-	private:
-		void Init(sf::RenderWindow& window);
+		void Init(std::reference_wrapper<sf::RenderWindow> window);
 
+	private:
 		void Exit();
 
 		void HandleInputs(sf::RenderWindow& window);
 	private:
-		std::unique_ptr<std::thread> _inputThread;
+		std::thread _inputThread;
 
 		bool _isRunning;
 		bool _readyToSend;

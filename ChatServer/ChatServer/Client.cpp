@@ -19,21 +19,21 @@ namespace UserTemplate
 	{
 		m.lock();
 		_network = std::make_unique<ClientNetwork>();
+		_network.get()->Init();
 		m.unlock();
 
-		sf::RenderWindow window(sf::VideoMode(200, 200), "custom Chat");
+		sf::RenderWindow window(sf::VideoMode(800, 600), "custom Chat");
 
 		_input = std::make_unique<ClientInput>(window);
+		_input.get()->Init(window);
 
-		while (_isRunning)
+		while (_isRunning && window.isOpen())
 		{
-
 			sf::Event event;
-			while (window.pollEvent(event))
+			while (window.pollEvent(event) && _isRunning)
 			{
 				if (event.type == sf::Event::Closed)
 					_isRunning = false;
-					
 			}
 
 			window.clear(sf::Color::Blue);

@@ -7,7 +7,6 @@ namespace UserTemplate
 	{
 		_readyToSend = false;
 		_isRunning = false;
-		Init(window);
 	}
 
 	ClientInput::~ClientInput()
@@ -36,62 +35,62 @@ namespace UserTemplate
 		_textToSend = "";
 	}
 
-	void ClientInput::Init(sf::RenderWindow& window)
+	void ClientInput::Init(std::reference_wrapper<sf::RenderWindow> window)
 	{
 		_isRunning = true;
-		//_inputThread = std::make_unique<std::thread>(&ClientInput::HandleInputs, this);
 
-		std::thread maintThread(&ClientInput::HandleInputs(window), this);
-		maintThread.join();
+		_inputThread = std::thread{ &ClientInput::HandleInputs, this, window };
+		
 	}
 
 	void ClientInput::Exit()
 	{
-		//_inputThread.get()->join();
+		_inputThread.join();
 	}
 
 	void ClientInput::HandleInputs(sf::RenderWindow& window)
 	{
+		sf::Event theEvent;
 		while (_isRunning)
 		{
-			if (!_readyToSend)
+			/*if (!_readyToSend)
 			{
 				std::getline(std::cin, _textToSend);
 				_readyToSend = true;
-			}
+			}*/
+
 			// do until there is no more event to execute
-			/*sf::Event event;
-			while (window.pollEvent(event))
+			if (!window.hasFocus())
 			{
+				printf("p");
+			}
+			if(window.pollEvent(theEvent))
+			{
+				/*if (!window.isOpen()) return;
 				// if we press a key on the keyboard
-				if (!_readyToSend && event.type == sf::Event::TextEntered)
+				if (!_readyToSend && theEvent.type == sf::Event::TextEntered)
 				{
-					if (event.text.unicode < 128)
+					if (theEvent.text.unicode < 128)
 					{
-						// escape key
-						if (event.key.code == ESCAPE_KEY)
-						{
-							fprintf(stderr, "Stopping application... \n");
-						}
 						// backscape key
-						else if (event.key.code == BACKSPACE_KEY)
+						if (theEvent.key.code == BACKSPACE_KEY)
 						{
 							if (_textToSend.size() > 0)
 								_textToSend = _textToSend.substr(0, _textToSend.size() - 1);
 						}
 						// enter key
-						else if (event.key.code == ENTER_KEY)
+						else if (theEvent.key.code == ENTER_KEY)
 						{
 							_readyToSend = true;
 						}
 						else
 						{
-							_textToSend += static_cast<char>(event.text.unicode);
+							_textToSend += static_cast<char>(theEvent.text.unicode);
 							//_text += static_cast<char>(event.text.unicode);
 						}
 					}
-				}
-			}*/
+				}*/
+			}
 		}
 	}
 }

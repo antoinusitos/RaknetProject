@@ -34,15 +34,16 @@ namespace UserTemplate
 
 		void ClientSendMessage(const char* text, MessageDestination destination);
 
-	private:
 		void Init();
+
+	private:
 
 		void Exit();
 
 		void HandleMessages();
 
 	private:
-		std::unique_ptr<std::thread> _networkThread;
+		std::thread _networkThread;
 
 		bool _isRunning;
 
