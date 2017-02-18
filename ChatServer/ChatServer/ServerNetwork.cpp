@@ -50,10 +50,10 @@ namespace UserTemplate
 				printf("message to send to all client %s : %s \n", theMessage._senderName, theMessage._toSend);
 				RakNet::BitStream bsOut;
 				bsOut.Write((RakNet::MessageID)ID_GAME_MESSAGE_1);
+				std::string s = theMessage._toSend;
 				std::string toSend = theMessage._senderName;
-				toSend += " : ";
-				toSend += theMessage._toSend;
-				bsOut.Write(toSend);
+				toSend += " : " + s;
+				bsOut.Write(toSend.c_str());
 				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetMyGUID(), true);
 			}
 			break;
