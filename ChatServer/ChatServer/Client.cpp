@@ -19,13 +19,11 @@ namespace UserTemplate
 	{
 		m.lock();
 		_network = std::make_unique<ClientNetwork>();
-		_network.get()->Init();
+		_network->Init();
 		m.unlock();
 
-		//sf::RenderWindow window(sf::VideoMode(800, 600), "custom Chat");
-
-		_input = std::make_unique<ClientInput>(/*window*/);
-		_input.get()->Init(/*window*/);
+		_input = std::make_unique<ClientInput>();
+		_input->Init();
 
 		while (_isRunning)
 		{
@@ -79,14 +77,13 @@ namespace UserTemplate
 			}
 		}
 		
-		_network.get()->Stop();
-		_input.get()->Stop();
+		Exit();
 
 	}
 
 	void Client::Exit()
 	{
-		_network.get()->Stop();
-		_input.get()->Stop();
+		_network->Stop();
+		_input->Stop();
 	}
 }
