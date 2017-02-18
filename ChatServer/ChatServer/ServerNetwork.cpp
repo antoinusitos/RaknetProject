@@ -47,10 +47,13 @@ namespace UserTemplate
 		{
 			case MessageDestination::Destination_Multicast :
 			{
-				printf("message to send to all client %s \n", theMessage._toSend);
+				printf("message to send to all client %s : %s \n", theMessage._senderName, theMessage._toSend);
 				RakNet::BitStream bsOut;
 				bsOut.Write((RakNet::MessageID)ID_GAME_MESSAGE_1);
-				bsOut.Write(theMessage._toSend);
+				std::string toSend = theMessage._senderName;
+				toSend += " : ";
+				toSend += theMessage._toSend;
+				bsOut.Write(toSend);
 				peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetMyGUID(), true);
 			}
 			break;

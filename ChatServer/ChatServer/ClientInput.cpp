@@ -3,10 +3,16 @@
 namespace UserTemplate
 {
 
-	ClientInput::ClientInput(sf::RenderWindow& window)
+	ClientInput::ClientInput()
 	{
 		_readyToSend = false;
 		_isRunning = false;
+		_mustClose = false;
+
+		if (!_font.loadFromFile("arial.ttf"))
+		{
+			printf("ERROR : cannot load font 'arial.ttf'");
+		}
 	}
 
 	ClientInput::~ClientInput()
@@ -29,18 +35,29 @@ namespace UserTemplate
 		return _textToSend.c_str();
 	}
 
+	bool ClientInput::MustClose()
+	{
+		return _mustClose;
+	}
+
 	void ClientInput::HasSend()
 	{
 		_readyToSend = false;
 		_textToSend = "";
 	}
 
-	void ClientInput::Init(std::reference_wrapper<sf::RenderWindow> window)
+	void ClientInput::Init()
 	{
+
 		_isRunning = true;
 
-		_inputThread = std::thread{ &ClientInput::HandleInputs, this, window };
+		_inputThread = std::thread( &ClientInput::HandleInputs, this );
 		
+	}
+
+	void ClientInput::PrintMessage(std::string theMessage)
+	{
+		_textToShow.push_back(theMessage);
 	}
 
 	void ClientInput::Exit()
@@ -48,9 +65,15 @@ namespace UserTemplate
 		_inputThread.join();
 	}
 
-	void ClientInput::HandleInputs(sf::RenderWindow& window)
+	void ClientInput::HandleInputs()
 	{
 		sf::Event theEvent;
+		sf::Context context;
+
+		_windowss = std::make_unique<sf::RenderWindow>();
+
+		_windowss.get()->create(sf::VideoMode(800, 600), "custom Chat");
+
 		while (_isRunning)
 		{
 			/*if (!_readyToSend)
@@ -59,14 +82,33 @@ namespace UserTemplate
 				_readyToSend = true;
 			}*/
 
-			// do until there is no more event to execute
-			if (!window.hasFocus())
+
+			_windowss->clear(sf::Color::Blue);
+
+			float index = 0.0f;
+			for (auto i = 0; i < _textToShow.size(); i++)
 			{
-				printf("p");
+				sf::Text text;
+				text.setFont(_font);
+				text.setString(_textToShow[i]);
+				text.setCharacterSize(24);
+				text.setFillColor(sf::Color::Red);
+				text.setPosition(0.0f, index * 20.0f);
+				index+=1.0f;
+				_windowss->draw(text);
 			}
-			if(window.pollEvent(theEvent))
+
+			sf::Text text;
+			text.setFont(_font);
+			text.setString(_textToSend);
+			text.setCharacterSize(24);
+			text.setFillColor(sf::Color::Red);
+			text.setPosition(0.0f, 550.0f);
+			_windowss->draw(text);
+
+			// do until there is no more event to execute
+			while (_windowss->pollEvent(theEvent))
 			{
-				/*if (!window.isOpen()) return;
 				// if we press a key on the keyboard
 				if (!_readyToSend && theEvent.type == sf::Event::TextEntered)
 				{
@@ -86,11 +128,18 @@ namespace UserTemplate
 						else
 						{
 							_textToSend += static_cast<char>(theEvent.text.unicode);
-							//_text += static_cast<char>(event.text.unicode);
 						}
 					}
-				}*/
+				}
+				else if (theEvent.type == sf::Event::Closed)
+				{
+					_isRunning = false;
+				}
+
+				_windowss->display();
 			}
 		}
+		_mustClose = true;
+		_windowss->close();
 	}
 }

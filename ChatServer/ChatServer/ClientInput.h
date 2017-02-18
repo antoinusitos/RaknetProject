@@ -17,7 +17,7 @@ namespace UserTemplate
 	class ClientInput
 	{
 	public:
-		ClientInput(sf::RenderWindow& window);
+		ClientInput();
 		~ClientInput();
 
 		void Stop();
@@ -25,20 +25,32 @@ namespace UserTemplate
 		bool GetReadyToSend();
 		const char* GetTextToSend() const;
 
+		bool MustClose();
+
 		void HasSend();
 
-		void Init(std::reference_wrapper<sf::RenderWindow> window);
+		void Init();
+
+		void PrintMessage(std::string theMessage);
 
 	private:
 		void Exit();
 
-		void HandleInputs(sf::RenderWindow& window);
+		void HandleInputs();
 	private:
 		std::thread _inputThread;
 
 		bool _isRunning;
 		bool _readyToSend;
+		bool _mustClose;
 
 		std::string _textToSend;
+
+		std::unique_ptr<sf::RenderWindow> _windowss;
+
+		std::vector<std::string> _textToShow;
+		sf::Font _font;
+
+
 	};
 }

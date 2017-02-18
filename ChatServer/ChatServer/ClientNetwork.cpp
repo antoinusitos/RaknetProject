@@ -21,11 +21,12 @@ namespace UserTemplate
 		printf("Enter a name \n");
 		std::cin.getline(_name, 512);
 
+		_messageReceived = false;
 	}
 
 	ClientNetwork::~ClientNetwork()
 	{
-		//Stop();
+
 	}
 
 	void ClientNetwork::Stop()
@@ -80,6 +81,17 @@ namespace UserTemplate
 		_networkThread = std::thread(&ClientNetwork::HandleMessages, this);
 	}
 
+	bool ClientNetwork::HasNewMessage()
+	{
+		return _messageReceived;
+	}
+
+	const char * ClientNetwork::GetNewMessage()
+	{
+		_messageReceived = false;
+		return _theMessage;
+	}
+
 	void ClientNetwork::Exit()
 	{
 		_networkThread.join();
@@ -126,16 +138,18 @@ namespace UserTemplate
 						RakNet::BitStream bsIn(_packet->data, _packet->length, false);
 						bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
 						bsIn.Read(rs);
-						printf("%s\n", rs.C_String());
+						printf("Game Message : %s\n", rs.C_String());
+						_messageReceived = true;
+						_theMessage = rs.C_String();
 					}
 					break;
-					default:
+					/*default:
 						RakNet::RakString rs;
 						RakNet::BitStream bsIn(_packet->data, _packet->length, false);
 						bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
 						bsIn.Read(rs);
 						printf("%s\n", rs.C_String());
-						break;
+						break;*/
 					}
 				}
 			}

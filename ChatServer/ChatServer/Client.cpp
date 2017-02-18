@@ -22,29 +22,20 @@ namespace UserTemplate
 		_network.get()->Init();
 		m.unlock();
 
-		sf::RenderWindow window(sf::VideoMode(800, 600), "custom Chat");
+		//sf::RenderWindow window(sf::VideoMode(800, 600), "custom Chat");
 
-		_input = std::make_unique<ClientInput>(window);
-		_input.get()->Init(window);
+		_input = std::make_unique<ClientInput>(/*window*/);
+		_input.get()->Init(/*window*/);
 
-		while (_isRunning && window.isOpen())
+		while (_isRunning)
 		{
-			sf::Event event;
-			while (window.pollEvent(event) && _isRunning)
-			{
-				if (event.type == sf::Event::Closed)
-					_isRunning = false;
-			}
-
-			window.clear(sf::Color::Blue);
-			window.display();
 
 			if (_input->GetReadyToSend())
 			{
 
 				std::string text = _input->GetTextToSend();
 
-				if (text[0] == 'm')
+				/*if (text[0] == 'm')
 				{
 					text.erase(0, 1);
 					_network->ClientSendMessage(text.c_str(), MessageDestination::Destination_Multicast);
@@ -62,17 +53,35 @@ namespace UserTemplate
 				else
 				{
 					printf("can't parse the text in the client !\n");
+				}*/
+
+				if (text[0] == '@')
+				{
+					text.erase(0, 1);
+					_network->ClientSendMessage(text.c_str(), MessageDestination::Destination_Client);
+				}
+				else
+				{
+					_network->ClientSendMessage(text.c_str(), MessageDestination::Destination_Multicast);
 				}
 
 				_input->HasSend();
+			}
+			if (_input->MustClose())
+			{
+				_isRunning = false;
+			}
+
+			if (_network->HasNewMessage())
+			{
+				std::string m (_network->GetNewMessage());
+				_input->PrintMessage(m);
 			}
 		}
 		
 		_network.get()->Stop();
 		_input.get()->Stop();
 
-		window.close();
-		//Exit();
 	}
 
 	void Client::Exit()

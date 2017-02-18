@@ -36,6 +36,9 @@ namespace UserTemplate
 
 		void Init();
 
+		bool HasNewMessage();
+		const char* GetNewMessage();
+
 	private:
 
 		void Exit();
@@ -52,5 +55,8 @@ namespace UserTemplate
 		RakNet::SystemAddress _serverGUID;
 
 		char* _name;
+
+		bool _messageReceived;
+		const char* _theMessage;
 	};
 }
