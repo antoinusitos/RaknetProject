@@ -1,5 +1,6 @@
 #include "ClientNetwork.h"
 #include <sstream>
+#include <chrono>
 
 namespace UserTemplate
 {
@@ -34,6 +35,13 @@ namespace UserTemplate
 	void ClientNetwork::Stop()
 	{
 		_isRunning = false;
+		m.lock();
+		RakNet::BitStream bsOut;
+		bsOut.Write((RakNet::MessageID)ID_WANT_TO_DISCONNECT);
+		bsOut.Write("disconnection");
+		_peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, _serverGUID, false);
+		m.unlock();
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		Exit();
 	}
 
@@ -88,10 +96,10 @@ namespace UserTemplate
 		return _messageReceived;
 	}
 
-	const char * ClientNetwork::GetNewMessage()
+	std::string ClientNetwork::GetNewMessage()
 	{
 		_messageReceived = false;
-		return _theMessage;
+ 		return _theMessage;
 	}
 
 	bool ClientNetwork::MustRefreshClientList()
@@ -122,69 +130,76 @@ namespace UserTemplate
 				{
 					switch (_packet->data[0])
 					{
-					case ID_CONNECTION_REQUEST_ACCEPTED:
-					{
-						printf("Our connection request has been accepted.\n");
-						printf("Our GUID : %s \n", _peer->GetMyGUID().ToString());
-						// Use a BitStream to write a custom user message
-						// Bitstreams are easier to use than sending casted structures, and handle endian swapping automatically
-						RakNet::BitStream bsOut;
-						bsOut.Write((RakNet::MessageID)ID_DESTINATION_SERVER_INIT);
-						bsOut.Write(_name);
-						_peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, _packet->systemAddress, false);
+						case ID_CONNECTION_REQUEST_ACCEPTED:
+						{
+							printf("Our connection request has been accepted.\n");
+							printf("Our GUID : %s \n", _peer->GetMyGUID().ToString());
+							// Use a BitStream to write a custom user message
+							// Bitstreams are easier to use than sending casted structures, and handle endian swapping automatically
+							RakNet::BitStream bsOut;
+							bsOut.Write((RakNet::MessageID)ID_DESTINATION_SERVER_INIT);
+							bsOut.Write(_name);
+							_peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, _packet->systemAddress, false);
 
-						_serverGUID = _packet->systemAddress;
-					}
-					break;
-					case ID_NO_FREE_INCOMING_CONNECTIONS:
-						printf("The server is full.\n");
-						break;
-					case ID_DISCONNECTION_NOTIFICATION:
-						printf("We have been disconnected.\n");
-						break;
-					case ID_CONNECTION_LOST:
-						printf("Connection lost.\n");
-						break;
-					case ID_GAME_MESSAGE_1:
-					{
-						RakNet::RakString rs;
-						RakNet::BitStream bsIn(_packet->data, _packet->length, false);
-						bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
-						bsIn.Read(rs);
-						printf("Game Message : %s\n", rs.C_String());
-						_messageReceived = true;
-						_theMessage = rs.C_String();
-					}
-					break;
-					case ID_REFRESH_CLIENT_LIST:
-					{
-						RakNet::RakString rs;
-						RakNet::BitStream bsIn(_packet->data, _packet->length, false);
-						bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
-						bsIn.Read(rs);
-						_clientConnected.clear();
-
-						const char* temp = rs.C_String();
-						std::string l(temp);
-						std::string delimiter = ";";
-
-						size_t pos = 0;
-						std::string token;
-						while ((pos = l.find(delimiter)) != std::string::npos) {
-							token = l.substr(0, pos);
-							_clientConnected.push_back(token);
-							l.erase(0, pos + delimiter.length());
+							_serverGUID = _packet->systemAddress;
 						}
-						_mustRefreshClientList = true;
-					}
-					break;
-					/*default:
-						RakNet::RakString rs;
-						RakNet::BitStream bsIn(_packet->data, _packet->length, false);
-						bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
-						bsIn.Read(rs);
-						printf("%s\n", rs.C_String());
-						break;*/
+						break;
+						case ID_NO_FREE_INCOMING_CONNECTIONS:
+							printf("The server is full.\n");
+							break;
+						case ID_DISCONNECTION_NOTIFICATION:
+							printf("We have been disconnected.\n");
+							break;
+						case ID_CONNECTION_LOST:
+							printf("Connection lost.\n");
+							break;
+						case ID_GAME_MESSAGE_1:
+						{
+							RakNet::RakString rs;
+							RakNet::BitStream bsIn(_packet->data, _packet->length, false);
+							bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
+							bsIn.Read(rs);
+							printf("Game Message : %s\n", rs.C_String());
+							_messageReceived = true;
+							_theMessage = rs.C_String();
+						}
+						break;
+						case ID_REFRESH_CLIENT_LIST:
+						{
+							RakNet::RakString rs;
+							RakNet::BitStream bsIn(_packet->data, _packet->length, false);
+							bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
+							bsIn.Read(rs);
+							_clientConnected.clear();
+
+							const char* temp = rs.C_String();
+							std::string l(temp);
+							std::string delimiter = ";";
+
+							size_t pos = 0;
+							std::string token;
+							while ((pos = l.find(delimiter)) != std::string::npos) {
+								token = l.substr(0, pos);
+								_clientConnected.push_back(token);
+								l.erase(0, pos + delimiter.length());
+							}
+							_mustRefreshClientList = true;
+						}
+						break;
+						case ID_WANT_TO_DISCONNECT:
+						{
+							RakNet::RakString rs;
+							RakNet::BitStream bsIn(_packet->data, _packet->length, false);
+							bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
+							bsIn.Read(rs);
+							std::string toSend(rs.C_String());
+							toSend += " has left the chat";
+							printf("%s\n", toSend.c_str());
+							_theMessage = toSend;
+							printf("after:%s\n", _theMessage.c_str());
+							_messageReceived = true;
+						}
+						break;
 					}
 				}
 			}

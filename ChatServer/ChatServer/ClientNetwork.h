@@ -10,6 +10,7 @@
 #include <thread>
 #include <memory>
 #include <vector>
+#include <mutex>
 
 #include "Data.h"
 
@@ -38,7 +39,7 @@ namespace UserTemplate
 		void Init();
 
 		bool HasNewMessage();
-		const char* GetNewMessage();
+		std::string GetNewMessage();
 
 		bool MustRefreshClientList();
 
@@ -62,10 +63,13 @@ namespace UserTemplate
 		char* _name;
 
 		bool _messageReceived;
-		const char* _theMessage;
+		//const char* _theMessage;
+		std::string _theMessage;
 
 		bool _mustRefreshClientList;
 
 		std::vector<std::string> _clientConnected;
+
+		std::mutex m;
 	};
 }

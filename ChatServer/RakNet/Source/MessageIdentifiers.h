@@ -435,7 +435,7 @@ enum DefaultMessageIDTypes
 
 	ID_REFRESH_CLIENT_LIST,
 
-	IS_WANT_TO_DISCONNECT,
+	ID_WANT_TO_DISCONNECT,
 
 	ID_USER_PACKET_ENUM
 	//-------------------------------------------------------------------------------------------------------------

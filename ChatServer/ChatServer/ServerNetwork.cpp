@@ -132,7 +132,6 @@ namespace UserTemplate
 				case ID_REMOTE_NEW_INCOMING_CONNECTION:
 					printf("Another client has connected.\n");
 					break;
-				break;
 				case ID_NEW_INCOMING_CONNECTION: 
 				{
 					printf("A connection is incoming. \n");
@@ -143,22 +142,38 @@ namespace UserTemplate
 				}
 				break;
 				case ID_DISCONNECTION_NOTIFICATION:
-					printf("A client has disconnected : %s.\n", packet->guid.ToString());
+					printf("A client has disconnected.\n");
 					break;
 				case ID_CONNECTION_LOST:
 					printf("A client lost the connection.\n");
 					break;
-				/*case ID_DESTINATION_MULTICAST:
+				case ID_WANT_TO_DISCONNECT:
 				{
-					printf("multicast message.\n");
-					RakNet::RakString rs;
-					RakNet::BitStream bsIn(packet->data, packet->length, false);
-					bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
-					bsIn.Read(rs);
-					printf("%s\n", rs.C_String());
-					peer->Send(&bsIn, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true);
+					printf("A client has just disconnect : %s.\n", packet->guid.ToString());
+					int indexToRemove = -1;
+					char* leaverName = "unknown";
+					for (auto i = 0; i < _allGUID.size(); i++)
+					{
+						if (_allGUID[i]._address == packet->guid)
+						{
+							indexToRemove = i;
+							leaverName = _allGUID[i]._name;
+						}
+					}
+
+					if (indexToRemove != -1)
+					{
+						RakNet::BitStream bsOut;
+						bsOut.Write((RakNet::MessageID)ID_WANT_TO_DISCONNECT);
+						bsOut.Write(leaverName);
+						peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetMyGUID(), true);
+
+						_allGUID.erase(_allGUID.begin() + indexToRemove);
+						_nbClientRegistered--;
+						_nbClient--;
+					}
 				}
-				break;*/
+					break;
 				case ID_DESTINATION_SERVER:
 				{
 					printf("server message.\n");
