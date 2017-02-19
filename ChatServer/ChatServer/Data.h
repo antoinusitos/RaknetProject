@@ -16,3 +16,9 @@ struct MessageData
 	char _senderName[500];
 	RakNet::AddressOrGUID _senderAddress;
 };
+
+struct ClientAddress
+{
+	RakNet::RakNetGUID _address;
+	char _name[500];
+};

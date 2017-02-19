@@ -9,6 +9,7 @@
 #include "RakNetTypes.h"  // MessageID
 #include <thread>
 #include <memory>
+#include <vector>
 
 #include "Data.h"
 
@@ -39,6 +40,10 @@ namespace UserTemplate
 		bool HasNewMessage();
 		const char* GetNewMessage();
 
+		bool MustRefreshClientList();
+
+		std::vector<std::string> GetAllClientsConnected();
+
 	private:
 
 		void Exit();
@@ -58,5 +63,9 @@ namespace UserTemplate
 
 		bool _messageReceived;
 		const char* _theMessage;
+
+		bool _mustRefreshClientList;
+
+		std::vector<std::string> _clientConnected;
 	};
 }

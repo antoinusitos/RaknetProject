@@ -10,6 +10,7 @@
 #include <thread>
 #include <memory>
 #include "Data.h"
+#include <vector>
 
 #define MAX_CLIENTS 10
 #define SERVER_PORT 60000
@@ -22,12 +23,6 @@ namespace UserTemplate
 	enum GameMessages
 	{
 		ID_GAME_MESSAGE_1 = ID_USER_PACKET_ENUM + 1
-	};
-
-	struct ClientAddress
-	{
-		RakNet::RakNetGUID _address;
-		char _name[500];
 	};
 
 	public:
@@ -55,7 +50,8 @@ namespace UserTemplate
 		RakNet::SystemAddress serverGUID;
 
 		int _nbClient;
+		int _nbClientRegistered;
 
-		ClientAddress _allGUID[2];
+		std::vector<ClientAddress> _allGUID;
 	};
 }

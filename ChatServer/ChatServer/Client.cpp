@@ -27,6 +27,10 @@ namespace UserTemplate
 
 		while (_isRunning)
 		{
+			if (_network->MustRefreshClientList())
+			{
+				_input->RefreshClientList(_network->GetAllClientsConnected());
+			}
 
 			if (_input->GetReadyToSend())
 			{

@@ -1,5 +1,6 @@
 #include "ServerNetwork.h"
 
+#include <ctime>
 #include <string>
 
 namespace UserTemplate
@@ -8,6 +9,7 @@ namespace UserTemplate
 	ServerNetwork::ServerNetwork()
 	{
 		_nbClient = 0;
+		_nbClientRegistered = 0;
 
 		RakNet::SocketDescriptor sd(SERVER_PORT, 0);
 		peer->Startup(MAX_CLIENTS, &sd, 1);
@@ -95,8 +97,28 @@ namespace UserTemplate
 
 	void ServerNetwork::HandleMessages()
 	{
+		std::time_t lastTime = std::time(nullptr);
 		while (_isRunning)
 		{
+			
+			if (std::time(nullptr) - lastTime >= 3)
+			{
+				lastTime = std::time(nullptr);
+				if (_nbClientRegistered > 0 && _allGUID[0]._name != "")
+				{
+					std::string toSend = "";
+					for (auto i = 0; i < _allGUID.size(); i++)
+					{
+						toSend += _allGUID[i]._name;
+						toSend += ";";
+					}
+					RakNet::BitStream bsOut;
+					bsOut.Write((RakNet::MessageID)ID_REFRESH_CLIENT_LIST);
+					bsOut.Write(toSend.c_str());
+					peer->Send(&bsOut, HIGH_PRIORITY, RELIABLE_ORDERED, 0, peer->GetMyGUID(), true);
+				}
+			}
+
 			for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive())
 			{
 				switch (packet->data[0])
@@ -114,14 +136,14 @@ namespace UserTemplate
 				case ID_NEW_INCOMING_CONNECTION: 
 				{
 					printf("A connection is incoming. \n");
+					_allGUID.push_back(ClientAddress());
 					_allGUID[_nbClient]._address = packet->guid;
 					printf("connection : %s \n", _allGUID[_nbClient]._address.ToString());
-
 					_nbClient++;
 				}
 				break;
 				case ID_DISCONNECTION_NOTIFICATION:
-					printf("A client has disconnected.\n");
+					printf("A client has disconnected : %s.\n", packet->guid.ToString());
 					break;
 				case ID_CONNECTION_LOST:
 					printf("A client lost the connection.\n");
@@ -189,6 +211,8 @@ namespace UserTemplate
 					bsOutSecond.Write(sending.c_str());
 					peer->Send(&bsOutSecond, HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->systemAddress, true);
 					printf("Done !\n");
+
+					_nbClientRegistered++;
 				}
 				break;
 				default:

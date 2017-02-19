@@ -60,6 +60,15 @@ namespace UserTemplate
 		_textToShow.push_back(theMessage);
 	}
 
+	void ClientInput::RefreshClientList(std::vector<std::string> clients)
+	{
+		_tempClientConnected.clear();
+		for (auto i = 0; i < clients.size(); i++)
+		{
+			_tempClientConnected.push_back(clients[i]);
+		}
+	}
+
 	void ClientInput::Exit()
 	{
 		_inputThread.join();
@@ -72,28 +81,80 @@ namespace UserTemplate
 
 		_windowss = std::make_unique<sf::RenderWindow>();
 
-		_windowss.get()->create(sf::VideoMode(800, 600), "custom Chat");
+		_windowss.get()->create(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "custom Chat");
 
 		while (_isRunning)
 		{
-			/*if (!_readyToSend)
+			_windowss->clear(sf::Color::White);
+
+			if(_clientConnected != _tempClientConnected && _tempClientConnected.size() > 0)
+				_clientConnected = _tempClientConnected;
+
+			// the debug help at the top
+			sf::RectangleShape rectangleHelp(sf::Vector2f(SCREEN_WIDTH, 50));
+			rectangleHelp.setPosition(sf::Vector2f(0, 0));
+			rectangleHelp.setOutlineThickness(-5);
+			rectangleHelp.setOutlineColor(sf::Color::Black);
+			rectangleHelp.setFillColor(sf::Color::Green);
+			_windowss->draw(rectangleHelp);
+
+			sf::Text textHelp;
+			textHelp.setFont(_font);
+			textHelp.setString("Enter a text and press Enter to Send (use @Name to send to a specific person)");
+			textHelp.setCharacterSize(24);
+			textHelp.setFillColor(sf::Color::Black);
+			textHelp.setPosition(10.0f, 10.0f);
+			_windowss->draw(textHelp);
+
+			// print all the connected client
+			sf::RectangleShape rectangleConnected(sf::Vector2f(200, SCREEN_HEIGHT));
+			rectangleConnected.setPosition(sf::Vector2f(SCREEN_WIDTH - 200, 0));
+			rectangleConnected.setFillColor(sf::Color::Cyan);
+			rectangleConnected.setOutlineThickness(-5);
+			rectangleConnected.setOutlineColor(sf::Color::Black);
+			_windowss->draw(rectangleConnected);
+
+			sf::Text textConnected;
+			textConnected.setFont(_font);
+			textConnected.setString("Connected :");
+			textConnected.setCharacterSize(24);
+			textConnected.setFillColor(sf::Color::Black);
+			textConnected.setPosition(SCREEN_WIDTH - 190, 20);
+			_windowss->draw(textConnected);
+
+			float indexConnected = 1.0f;
+			for (auto it : _clientConnected)
 			{
-				std::getline(std::cin, _textToSend);
-				_readyToSend = true;
-			}*/
+				//if (it != "")
+				//{
+					sf::Text clientConnected;
+					clientConnected.setFont(_font);
+					clientConnected.setString(it);
+					clientConnected.setCharacterSize(24);
+					clientConnected.setFillColor(sf::Color::Black);
+					clientConnected.setPosition(SCREEN_WIDTH - 190, 20 + (indexConnected * 20.0f));
+					indexConnected += 1.0f;
+					_windowss->draw(clientConnected);
+				//}
+			}
 
+			// the rectangle of the input
+			sf::RectangleShape rectangle(sf::Vector2f(SCREEN_WIDTH, 50));
+			rectangle.setPosition(sf::Vector2f(0, SCREEN_HEIGHT - 50));
+			rectangle.setFillColor(sf::Color::Green);
+			rectangle.setOutlineThickness(-5);
+			rectangle.setOutlineColor(sf::Color::Black);
+			_windowss->draw(rectangle);
 
-			_windowss->clear(sf::Color::Blue);
-
-			float index = 0.0f;
+			float index = 1.0f;
 			for (auto i = 0; i < _textToShow.size(); i++)
 			{
 				sf::Text text;
 				text.setFont(_font);
 				text.setString(_textToShow[i]);
 				text.setCharacterSize(24);
-				text.setFillColor(sf::Color::Red);
-				text.setPosition(0.0f, index * 20.0f);
+				text.setFillColor(sf::Color::Black);
+				text.setPosition(0.0f, 50 + (index * 20.0f));
 				index+=1.0f;
 				_windowss->draw(text);
 			}
@@ -102,8 +163,8 @@ namespace UserTemplate
 			text.setFont(_font);
 			text.setString(_textToSend);
 			text.setCharacterSize(24);
-			text.setFillColor(sf::Color::Red);
-			text.setPosition(0.0f, 550.0f);
+			text.setFillColor(sf::Color::Black);
+			text.setPosition(10.0f, SCREEN_HEIGHT - 40);
 			_windowss->draw(text);
 
 			// do until there is no more event to execute

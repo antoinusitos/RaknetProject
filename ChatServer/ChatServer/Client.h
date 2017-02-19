@@ -4,6 +4,7 @@
 #include "ClientInput.h"
 #include "ClientNetwork.h"
 #include <mutex>
+#include <vector>
 
 namespace UserTemplate
 {

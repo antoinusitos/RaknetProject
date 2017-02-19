@@ -1,4 +1,5 @@
 #include "ClientNetwork.h"
+#include <sstream>
 
 namespace UserTemplate
 {
@@ -22,6 +23,7 @@ namespace UserTemplate
 		std::cin.getline(_name, 512);
 
 		_messageReceived = false;
+		_mustRefreshClientList = false;
 	}
 
 	ClientNetwork::~ClientNetwork()
@@ -92,6 +94,17 @@ namespace UserTemplate
 		return _theMessage;
 	}
 
+	bool ClientNetwork::MustRefreshClientList()
+	{
+		return _mustRefreshClientList;
+	}
+
+	std::vector<std::string> ClientNetwork::GetAllClientsConnected()
+	{
+		_mustRefreshClientList = false;
+		return _clientConnected;
+	}
+
 	void ClientNetwork::Exit()
 	{
 		_networkThread.join();
@@ -143,6 +156,28 @@ namespace UserTemplate
 						_theMessage = rs.C_String();
 					}
 					break;
+					case ID_REFRESH_CLIENT_LIST:
+					{
+						RakNet::RakString rs;
+						RakNet::BitStream bsIn(_packet->data, _packet->length, false);
+						bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
+						bsIn.Read(rs);
+						_clientConnected.clear();
+
+						const char* temp = rs.C_String();
+						std::string l(temp);
+						std::string delimiter = ";";
+
+						size_t pos = 0;
+						std::string token;
+						while ((pos = l.find(delimiter)) != std::string::npos) {
+							token = l.substr(0, pos);
+							_clientConnected.push_back(token);
+							l.erase(0, pos + delimiter.length());
+						}
+						_mustRefreshClientList = true;
+					}
+					break;
 					/*default:
 						RakNet::RakString rs;
 						RakNet::BitStream bsIn(_packet->data, _packet->length, false);
@@ -153,7 +188,6 @@ namespace UserTemplate
 					}
 				}
 			}
-
 		}
 	}
 }

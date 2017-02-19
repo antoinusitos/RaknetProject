@@ -433,6 +433,10 @@ enum DefaultMessageIDTypes
 	ID_DESTINATION_CLIENT,
 	ID_DESTINATION_SERVER_INIT,
 
+	ID_REFRESH_CLIENT_LIST,
+
+	IS_WANT_TO_DISCONNECT,
+
 	ID_USER_PACKET_ENUM
 	//-------------------------------------------------------------------------------------------------------------
  

@@ -12,6 +12,9 @@
 #define ENTER_KEY 13
 #define BACKSPACE_KEY 8
 
+#define SCREEN_WIDTH 1280
+#define SCREEN_HEIGHT 800
+
 namespace UserTemplate
 {
 	class ClientInput
@@ -33,6 +36,8 @@ namespace UserTemplate
 
 		void PrintMessage(std::string theMessage);
 
+		void RefreshClientList(std::vector<std::string> clients);
+
 	private:
 		void Exit();
 
@@ -51,6 +56,7 @@ namespace UserTemplate
 		std::vector<std::string> _textToShow;
 		sf::Font _font;
 
-
+		std::vector<std::string> _clientConnected;
+		std::vector<std::string> _tempClientConnected;
 	};
 }
