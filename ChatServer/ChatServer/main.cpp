@@ -26,13 +26,11 @@ int main(void)
 	std::cin.getline(str, 512);
 	if ((str[0] == 'c') || (str[0] == 'C'))
 	{
-		UserTemplate::Client* c = new UserTemplate::Client();
-		delete c;
+		UserTemplate::Client();
 	}
 	else 
 	{
-		UserTemplate::Server* s = new UserTemplate::Server();
-		delete s;
+		UserTemplate::Server();
 	}
 
 	return 0;

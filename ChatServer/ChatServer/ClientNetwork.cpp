@@ -160,8 +160,8 @@ namespace UserTemplate
 							bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
 							bsIn.Read(rs);
 							printf("Game Message : %s\n", rs.C_String());
-							_messageReceived = true;
 							_theMessage = rs.C_String();
+							_messageReceived = true;
 						}
 						break;
 						case ID_REFRESH_CLIENT_LIST:
